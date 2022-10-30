@@ -1,0 +1,20 @@
+version: "1.0"
+services:
+  flask-app:
+    build: .
+    privileged: true
+    user: root
+    ports:
+     - 5000:5000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    container_name: flask-app
+  zabbix-web-monitor:
+    build: zabbix/zabbix-web-service
+    privileged: true
+    user: root
+    ports:
+      - 10053:10053
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    container_name: zabbix-web-monitor

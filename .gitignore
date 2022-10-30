@@ -1,0 +1,15 @@
+.idea/
+venv
+__pycache__
+
+
+# vagrant files
+.vagrant
+
+# local .terraform directories
+.terraform
+.terraform.*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
