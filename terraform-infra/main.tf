@@ -1,15 +1,11 @@
 provider "aws" {
   region = var.region
-  access_key = "AKIAWURRLGYL2BWMR3H7"
-  secret_key = "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"
 //  default_tags = var.default_tag
 }
 
 # Network
 resource "aws_vpc" "test_vpc" {
   cidr_block = var.vpc_cidr
-  enable_dns_hostnames = true
-  enable_dns_support = true
 
   tags = {
     Name = "flask-app-vpc"
@@ -134,7 +130,21 @@ resource "aws_instance" "test_web_server" {
 
   user_data = <<-EOF
               #!/bin/bash
-              sudo apt update -y
+              sudo apt-get update -y
+              sudo apt-get install -y git python3 python3-pip nginx
+              git clone https://github.com/Sh4peSh1fter/web-to-aws.git
+              export FLASK_APP_PORT=5000
+              sudo pip3 install -r /web-to-aws/requirements.txt
+
+              sudo systemctl start nginx
+              sudo systemctl enable nginx
+
+              cp -r /web-to-aws/flask-app/nginx-default-conf.txt /etc/nginx/sites-enables/default
+              sudo systemctl restart nginx
+
+              sudo chmod +x /web-to-aws/entrypoint.sh
+              cd /web-to-aws/flask-app/
+              ./entrypoint.sh
               EOF
 
   tags = {
@@ -142,3 +152,12 @@ resource "aws_instance" "test_web_server" {
     EnvName = var.env_tag
   }
 }
+
+//data "http" "get_request_to_flask_app" {
+//  url = aws_internet_gateway.test_internet_gateway
+//
+//  # Optional request headers
+//  request_headers = {
+//    Accept = "application/json"
+//  }
+//}
